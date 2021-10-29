@@ -1,0 +1,28 @@
+version: '3'
+services:
+  caddy:
+    container_name: caddy
+    image: geektrcloud/caddy
+    restart: unless-stopped
+    environment:
+      - ACME_AGREE=true
+    volumes:
+      - "data:/root/.caddy:rw"
+      - "logs:/logs:rw"
+      - "/srv/geektr.co/caddy/Caddyfile:/etc/Caddyfile:ro"
+    ports:
+      - "80:80"
+      - "443:443"
+
+networks:
+  default:
+    external:
+      name: 'gitlab'
+
+volumes:
+  data:
+    external:
+      name: 'gitlab_caddy_data'
+  logs:
+    external:
+      name: 'gitlab_caddy_logs'

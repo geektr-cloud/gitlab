@@ -1,0 +1,20 @@
+version: '3'
+services:
+  verdaccio:
+    container_name: verdaccio
+    image: geektrcloud/verdaccio
+    restart: unless-stopped
+    volumes:
+      - './logo.svg:/opt/verdaccio/node_modules/@verdaccio/ui-theme/static/logo.svg:ro'
+      - './config.yaml:/verdaccio/conf/config.yaml:ro'
+      - 'storage:/verdaccio/storage'
+
+networks:
+  default:
+    external:
+      name: 'gitlab'
+
+volumes:
+  storage:
+    external:
+      name: 'gitlab_verdaccio_storage'

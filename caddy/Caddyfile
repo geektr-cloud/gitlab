@@ -1,0 +1,22 @@
+git.geektr.co {
+    tls geektheripper@gmail.com
+    proxy / gitlab {
+        transparent
+        websocket
+    }
+}
+
+npm.geektr.co {
+    tls geektheripper@gmail.com
+    proxy / verdaccio:4873 {
+        transparent
+        websocket
+    }
+}
+
+registry.geektr.co {
+    tls geektheripper@gmail.com
+    proxy / gitlab:5001 {
+        transparent
+    }
+}
