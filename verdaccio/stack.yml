@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  verdaccio:
+    image: "geektrcloud/verdaccio"
+    secrets:
+      - verdaccio_env
+    configs:
+      - source: verdaccio_config
+        target: /config.yaml
+    volumes:
+      - "data:/verdaccio/storage"
+    environment:
+      - "VERDACCIO_PUBLIC_URL=https://npm.geektr.co"
+    networks:
+      gitlab_net:
+        aliases:
+          - verdaccio.verdaccio
+
+networks:
+  gitlab_net:
+    external: true
+    name: gitlab_net
+
+volumes:
+  data:
+    external: true
+    name: "verdaccio.data"
+
+secrets:
+  verdaccio_env:
+    external: true
+    name: "verdaccio.env"
+
+configs:
+  verdaccio_config:
+    external: true
+    name: "verdaccio.config"

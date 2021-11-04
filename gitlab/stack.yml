@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  gitlab:
+    image: "gitlab/gitlab-ce:14.4.1-ce.0"
+    command: sh -c "export $$(grep -v '^#' /run/secrets/gitlab_env | xargs -d '\n') && /assets/wrapper"
+    ports:
+      - "22:22"
+    secrets:
+      - gitlab_env
+    configs:
+      - omnibus_config
+    volumes:
+      - "conf:/etc/gitlab/"
+      - "logs:/var/log/gitlab/"
+      - "data:/var/opt/gitlab/"
+    environment:
+      - "GITLAB_OMNIBUS_CONFIG=from_file('/omnibus_config')"
+    networks:
+      gitlab_net:
+        aliases:
+          - gitlab.gitlab
+
+networks:
+  gitlab_net:
+    external: true
+    name: gitlab_net
+
+volumes:
+  conf:
+    external: true
+    name: "gitlab.conf"
+  logs:
+    external: true
+    name: "gitlab.logs"
+  data:
+    external: true
+    name: "gitlab.data"
+
+secrets:
+  gitlab_env:
+    external: true
+    name: "gitlab.env"
+
+configs:
+  omnibus_config:
+    external: true
+    name: "gitlab.omnibus-config"

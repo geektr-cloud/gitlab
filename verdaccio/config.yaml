@@ -1,3 +1,4 @@
+# VERDACCIO_PUBLIC_URL
 storage: /verdaccio/storage/data
 plugins: /verdaccio/plugins
 
@@ -9,16 +10,17 @@ middlewares:
 
 auth:
   gitlab-oauth:
-    group: npm
-    client-id: ${VERDACCIO_OAUTH_CLIENT_ID}
-    client-secret: ${VERDACCIO_OAUTH_CLIENT_SECRET}
-    gitlab-host: https://git.plandev.me
+    group: $EXT_GITLAB_GROUP
+    client-id: $EXT_GITLAB_OAUTH_CLIENT_ID
+    client-secret: $EXT_GITLAB_OAUTH_CLIENT_SECRET
+    gitlab-host: $EXT_GITLAB_HOST
 
 web:
   enable: true
-  title: GeekTR Node Package Manager
+  title: GeekTR NPM
   scope: "@gc"
-  logo: logo.svg
+  logo: /logo.svg
+  darkMode: true
 
 security:
   api:
@@ -34,20 +36,23 @@ security:
 uplinks:
   npmjs:
     url: http://registry.npm.taobao.org/
-    cache: false
+    maxage: 30d
 
 packages:
   "@gc/*":
-    access: $all
+    access:
     publish: npm
   "@gc-pri/*":
     access: npm
     publish: npm
   "**":
-    access: $all
+    access:
     publish: npm
     proxy: npmjs
 
+http_proxy: http://proxy.geektr.co:3128
+https_proxy: http://proxy.geektr.co:3128
+no_proxy: localhost,127.0.0.1
+
 logs:
   - { type: stdout, format: pretty, level: http }
-      

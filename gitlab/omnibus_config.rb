@@ -8,7 +8,7 @@ gitlab_rails['internal_api_url'] = 'https://git.geektr.co'
 nginx['custom_error_pages'] = {
   '404' => {
     'title' => '404 Not Found',
-    'header' => 'Ooooops!',
+    'header' => 'Ooooooooops!',
     'message' => '根据相关法律法规和政策，部分结果未予显示'
   }
 }
@@ -26,41 +26,42 @@ gitlab_rails['smtp_authentication'] = 'login'
 gitlab_rails['smtp_enable_starttls_auto'] = true
 gitlab_rails['smtp_tls'] = true
 gitlab_rails['smtp_user_name'] = 'yumemi@ch-postal.com'
-gitlab_rails['smtp_password'] = '${SMTP_PASSWORD}'
+gitlab_rails['smtp_password'] = ENV['EXT_SMTP_PASSWORD']
 gitlab_rails['smtp_domain'] = 'exmail.qq.com'
 
+user['git_user_name'] = "gitlab"
 user['git_user_email'] = 'yumemi@ch-postal.com'
 
 minio_configuration = {
   'provider' => 'AWS',
   'region' => 'us-east-1',
   'aws_signature_version' => 4,
-  'path_style' => true,
   'enable_signature_v4_streaming' => true,
-  'host' => 'minio.geektr.co',
-  'endpoint' => 'https://minio.geektr.co:9091',
-  'aws_access_key_id' => '${AWS_ACCESS_KEY_ID}',
-  'aws_secret_access_key' => '${AWS_SECRET_ACCESS_KEY}'
+  'host' => 'anita.minio.geektr.co',
+  'endpoint' => 'https://anita.minio.geektr.co:9002',
+  'aws_access_key_id' => ENV['EXT_AWS_ACCESS_KEY_ID'],
+  'aws_secret_access_key' => ENV['EXT_AWS_SECRET_ACCESS_KEY']
 }
 
+gitlab_rails['artifacts_enabled'] = true
 gitlab_rails['lfs_enabled'] = true
-
-gitlab_rails['lfs_object_store_enabled'] = true
-gitlab_rails['lfs_object_store_direct_upload'] = false
-gitlab_rails['lfs_object_store_remote_directory'] = "gitlab-lfs"
-gitlab_rails['lfs_object_store_connection'] = minio_configuration
-
-gitlab_rails['uploads_object_store_enabled'] = true
-gitlab_rails['uploads_object_store_direct_upload'] = false
-gitlab_rails['uploads_object_store_remote_directory'] = "gitlab-uploads"
-gitlab_rails['uploads_object_store_connection'] = minio_configuration
-
 gitlab_rails['external_diffs_enabled'] = true
-gitlab_rails['external_diffs_object_store_enabled'] = true
-gitlab_rails['external_diffs_object_store_remote_directory'] = "gitlab-extdiffs"
-gitlab_rails['external_diffs_object_store_connection'] = minio_configuration
+gitlab_rails['packages_enabled'] = true
+gitlab_rails['terraform_state_enabled'] = true
 
-gitlab_rails['gitlab_default_projects_features_container_registry'] = false
+gitlab_rails['object_store']['enabled'] = true
+gitlab_rails['object_store']['proxy_download'] = false
+gitlab_rails['object_store']['connection'] = minio_configuration
+gitlab_rails['object_store']['objects']['artifacts']['bucket'] = 'gitlab-artifacts'
+gitlab_rails['object_store']['objects']['external_diffs']['bucket'] = 'gitlab-extdiffs'
+gitlab_rails['object_store']['objects']['lfs']['bucket'] = 'gitlab-lfs'
+gitlab_rails['object_store']['objects']['uploads']['bucket'] = 'gitlab-uploads'
+gitlab_rails['object_store']['objects']['packages']['bucket'] = 'gitlab-packages'
+gitlab_rails['object_store']['objects']['dependency_proxy']['bucket'] = 'gitlab-depproxy'
+gitlab_rails['object_store']['objects']['terraform_state']['bucket'] = 'gitlab-tfstate'
+gitlab_rails['object_store']['objects']['pages']['bucket'] = 'gitlab-pages'
+
+gitlab_rails['gitlab_default_projects_features_container_registry'] = true
 
 registry_external_url 'https://registry.geektr.co'
 

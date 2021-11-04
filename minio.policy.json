@@ -1,0 +1,25 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": [
+        "arn:aws:s3:::gitlab-registry/*",
+        "arn:aws:s3:::gitlab-runner/*",
+        "arn:aws:s3:::gitlab-uploads/*",
+        "arn:aws:s3:::gitlab-artifacts/*",
+        "arn:aws:s3:::gitlab-extdiffs/*",
+        "arn:aws:s3:::gitlab-lfs/*",
+        "arn:aws:s3:::gitlab-packages/*",
+        "arn:aws:s3:::gitlab-depproxy/*",
+        "arn:aws:s3:::gitlab-tfstate/*",
+        "arn:aws:s3:::gitlab-pages/*"
+      ]
+    }
+  ]
+}
