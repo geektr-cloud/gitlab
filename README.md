@@ -44,31 +44,31 @@ service
 read ID
 
 # Network
-ssh -p 2222 git-next.geektr.co "docker network create -d overlay --attachable gitlab_net"
+ssh -p 2222 git.geektr.co "docker network create -d overlay --attachable gitlab_net"
 
 # Gitlab
-ssh -p 2222 git-next.geektr.co <<EOF
+ssh -p 2222 git.geektr.co <<EOF
 docker volume create gitlab.conf
 docker volume create gitlab.logs
 docker volume create gitlab.data
 EOF
 
-ssh -p 2222 git-next.geektr.co "docker config create gitlab.omnibus-config -" <gitlab/omnibus_config.rb
+ssh -p 2222 git.geektr.co "docker config create gitlab.omnibus-config -" <gitlab/omnibus_config.rb
 
-i vault env envsubst geektr.co/gitlab.infra/$ID/gitlab <gitlab/secret.env | ssh -p 2222 git-next.geektr.co "docker secret create gitlab.env -"
+i vault env envsubst geektr.co/gitlab.infra/$ID/gitlab <gitlab/secret.env | ssh -p 2222 git.geektr.co "docker secret create gitlab.env -"
 
-ssh -p 2222 git-next.geektr.co "docker stack deploy --compose-file - gitlab" <gitlab/stack.yml
+ssh -p 2222 git.geektr.co "docker stack deploy --compose-file - gitlab" <gitlab/stack.yml
 
 # Caddy
-# ssh -p 2222 git-next.geektr.co "docker stack rm caddy"
-# ssh -p 2222 git-next.geektr.co "docker config rm caddy.caddyfile"
-ssh -p 2222 git-next.geektr.co "docker volume create caddy.data"
-ssh -p 2222 git-next.geektr.co "docker config create caddy.caddyfile -" <caddy/Caddyfile
-ssh -p 2222 git-next.geektr.co "docker stack deploy --compose-file - caddy" <caddy/stack.yml
+# ssh -p 2222 git.geektr.co "docker stack rm caddy"
+# ssh -p 2222 git.geektr.co "docker config rm caddy.caddyfile"
+ssh -p 2222 git.geektr.co "docker volume create caddy.data"
+ssh -p 2222 git.geektr.co "docker config create caddy.caddyfile -" <caddy/Caddyfile
+ssh -p 2222 git.geektr.co "docker stack deploy --compose-file - caddy" <caddy/stack.yml
 
 # Verdaccio
-ssh -p 2222 git-next.geektr.co "docker volume create verdaccio.data"
-ssh -p 2222 git-next.geektr.co "docker config create verdaccio.config -" <verdaccio/config.yaml
-i vault env envsubst geektr.co/gitlab.infra/$ID/verdaccio <verdaccio/secret.env | ssh -p 2222 git-next.geektr.co "docker secret create verdaccio.env -"
-ssh -p 2222 git-next.geektr.co "docker stack deploy --compose-file - verdaccio" <verdaccio/stack.yml
+ssh -p 2222 git.geektr.co "docker volume create verdaccio.data"
+ssh -p 2222 git.geektr.co "docker config create verdaccio.config -" <verdaccio/config.yaml
+i vault env envsubst geektr.co/gitlab.infra/$ID/verdaccio <verdaccio/secret.env | ssh -p 2222 git.geektr.co "docker secret create verdaccio.env -"
+ssh -p 2222 git.geektr.co "docker stack deploy --compose-file - verdaccio" <verdaccio/stack.yml
 ```
