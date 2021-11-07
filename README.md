@@ -71,4 +71,24 @@ ssh -p 2222 git.geektr.co "docker volume create verdaccio.data"
 ssh -p 2222 git.geektr.co "docker config create verdaccio.config -" <verdaccio/config.yaml
 i vault env envsubst geektr.co/gitlab.infra/$ID/verdaccio <verdaccio/secret.env | ssh -p 2222 git.geektr.co "docker secret create verdaccio.env -"
 ssh -p 2222 git.geektr.co "docker stack deploy --compose-file - verdaccio" <verdaccio/stack.yml
+
+# Gitlab Runner
+docker volume create gitlab-runner-config
+REGISTRATION_TOKEN="$(i vault json geektr.co/gitlab.infra/$ID/gitlab-runner | jq -r '.REGISTRATION_TOKEN')"
+docker run --rm -it -v gitlab-runner-config:/etc/gitlab-runner gitlab/gitlab-runner:latest register \
+  --url "https://git.geektr.co" \
+  --registration-token "$REGISTRATION_TOKEN" \
+  --description "Commom gitlab runner" \
+  --executor "docker" \
+  --tag-list "commom,docker,debian,linux,vm" \
+  --run-untagged="true" \
+  --locked="false" \
+  --docker-image "debian:bullseye" \
+  --non-interactive
+
+docker run -d --name gitlab-runner --restart always \
+  --env TZ=Asia/Shanghai \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v gitlab-runner-config:/etc/gitlab-runner \
+  gitlab/gitlab-runner:latest
 ```
