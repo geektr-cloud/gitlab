@@ -18,7 +18,7 @@ auth:
 web:
   enable: true
   title: GeekTR NPM
-  scope: "@gc"
+  scope: "@gtr"
   logo: /logo.svg
   darkMode: true
 
@@ -39,15 +39,15 @@ uplinks:
     maxage: 30d
 
 packages:
-  "@gc/*":
-    access:
-    publish: npm
-  "@gc-pri/*":
-    access: npm
-    publish: npm
+  "@gtr/*":
+    access: $all
+    publish: $EXT_GITLAB_GROUP
+  "@gtr-pri/*":
+    access: $EXT_GITLAB_GROUP
+    publish: $EXT_GITLAB_GROUP
   "**":
-    access:
-    publish: npm
+    access: $all
+    publish: $EXT_GITLAB_GROUP
     proxy: npmjs
 
 http_proxy: http://proxy.geektr.co:3128
