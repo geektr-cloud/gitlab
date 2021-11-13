@@ -42,6 +42,9 @@ packages:
   "@gtr/*":
     access: $all
     publish: $EXT_GITLAB_GROUP
+  "@gtr-infra/*":
+    access: $all
+    publish: $EXT_GITLAB_GROUP
   "@gtr-pri/*":
     access: $EXT_GITLAB_GROUP
     publish: $EXT_GITLAB_GROUP

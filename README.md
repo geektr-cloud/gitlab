@@ -3,6 +3,14 @@
 https://git.geektr.co
 https://npm.geektr.co
 
+## Npm Usage
+
+```bash
+npm set @gtr:registry https://npm.geektr.co
+npm set @gtr-pri:registry https://npm.geektr.co
+npm set @gtr-infra:registry https://npm.geektr.co
+```
+
 ## Network
 
 Gitlab:
