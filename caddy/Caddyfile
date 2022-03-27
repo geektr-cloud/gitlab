@@ -1,18 +1,24 @@
 {
-    email geektheripper@gmail.com
+	email geektheripper@gmail.com
 }
 
 git.geektr.co {
-    respond /coffee "I'm a teapot" 418
-    respond /sex "Never Gonna Give You Up" 419
-    header /sex rickroll "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-    reverse_proxy gitlab.gitlab
+	respond /the-only-truth "水哥真帅" 418
+	header /the-only-truth note "body is a lie"
+	header /the-only-truth real-truth "水哥是猪"
+
+	respond /coffee "I'm a teapot" 418
+
+	respond /sex "Never Gonna Give You Up" 419
+	header /sex rickroll "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+
+	reverse_proxy gitlab.gitlab
 }
 
 registry.geektr.co {
-    reverse_proxy gitlab.gitlab:5001
+	reverse_proxy gitlab.gitlab:5001
 }
 
 npm.geektr.co {
-    reverse_proxy verdaccio.verdaccio:4873
+	reverse_proxy verdaccio.verdaccio:4873
 }
