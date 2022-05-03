@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   gitlab:
-    image: "gitlab/gitlab-ce:14.9.2-ce.0"
+    image: "gitlab/gitlab-ce:14.10.1-ce.0"
     command: sh -c "export $$(grep -v '^#' /run/secrets/gitlab_env | xargs -d '\n') && /assets/wrapper"
     ports:
       - "22:22"
