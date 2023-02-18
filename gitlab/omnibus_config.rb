@@ -14,23 +14,24 @@ nginx['custom_error_pages'] = {
 }
 
 gitlab_rails['gitlab_email_enabled'] = true
-gitlab_rails['gitlab_email_from'] = 'yumemi@ch-postal.com'
+gitlab_rails['gitlab_email_from'] = 'yumemi@geektr.co'
 gitlab_rails['gitlab_email_display_name'] = 'Yumemi'
-gitlab_rails['gitlab_email_reply_to'] = 'noreply@ch-postal.com'
-gitlab_rails['gitlab_email_subject_suffix'] = '[GeekTR/Git]'
+gitlab_rails['gitlab_email_reply_to'] = 'noreply@geektr.co'
+gitlab_rails['gitlab_email_subject_suffix'] = '[GeekTR/GitLab]'
 
 gitlab_rails['smtp_enable'] = true
-gitlab_rails['smtp_address'] = 'smtp.exmail.qq.com'
-gitlab_rails['smtp_port'] = 465
-gitlab_rails['smtp_authentication'] = 'login'
+gitlab_rails['smtp_address'] = 'monday.mxrouting.net'
+gitlab_rails['smtp_port'] = 587
 gitlab_rails['smtp_enable_starttls_auto'] = true
-gitlab_rails['smtp_tls'] = true
-gitlab_rails['smtp_user_name'] = 'yumemi@ch-postal.com'
+gitlab_rails['smtp_tls'] = false
+gitlab_rails['smtp_authentication'] = 'login'
+gitlab_rails['smtp_user_name'] = 'yumemi@geektr.co'
 gitlab_rails['smtp_password'] = ENV['EXT_SMTP_PASSWORD']
-gitlab_rails['smtp_domain'] = 'exmail.qq.com'
+gitlab_rails['smtp_domain'] = 'mail.geektr.co'
+
 
 user['git_user_name'] = "gitlab"
-user['git_user_email'] = 'yumemi@ch-postal.com'
+user['git_user_email'] = 'yumemi@geektr.co'
 
 minio_configuration = {
   'provider' => 'AWS',
