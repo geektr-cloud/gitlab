@@ -1,0 +1,134 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gitlab-deployment
+  namespace: gitlab
+  labels:
+    app: gitlab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gitlab
+  template:
+    metadata:
+      labels:
+        app: gitlab
+    spec:
+      containers:
+      - name: gitlab
+        image: gitlab/gitlab-ce:15.8.3-ce.0
+        env:
+        - name: EXT_SMTP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: gitlab-env
+              key: EXT_SMTP_PASSWORD
+        - name: EXT_AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: gitlab-env
+              key: EXT_AWS_ACCESS_KEY_ID
+        - name: EXT_AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: gitlab-env
+              key: EXT_AWS_SECRET_ACCESS_KEY
+        ports:
+        - containerPort: 22
+        - containerPort: 80
+        - containerPort: 5001
+        volumeMounts:
+        - name: gitlab-data-vol
+          mountPath: /var/opt/gitlab/
+        - name: gitlab-logs-vol
+          mountPath: /var/log/gitlab/
+        - name: gitlab-conf-vol
+          mountPath: /etc/gitlab/
+        - name: gitlab-config-file-vol
+          subPath: gitlab.rb
+          mountPath: /etc/gitlab/gitlab.rb
+      volumes:
+      - name: gitlab-data-vol
+        hostPath:
+          path: /data/k8s-volume/gitlab-data
+          type: DirectoryOrCreate
+      - name: gitlab-logs-vol
+        hostPath:
+          path: /data/k8s-volume/gitlab-logs
+          type: DirectoryOrCreate
+      - name: gitlab-conf-vol
+        hostPath:
+          path: /data/k8s-volume/gitlab-conf
+          type: DirectoryOrCreate
+      - name: gitlab-config-file-vol
+        configMap:
+          name: gitlab-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: gitlab
+  name: gitlab-svc
+spec:
+  ports:
+    - name: gitlab-http
+      port: 80
+    - name: registry-http
+      port: 5001
+  selector:
+    app: gitlab
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: gitlab
+  name: gitlab-ssh-svc
+spec:
+  type: LoadBalancer
+  ports:
+    - name: gitlab-ssh
+      port: 22
+      targetPort: 22
+  selector:
+    app: gitlab
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: gitlab
+  name: gitlab-ingress
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+spec:
+  rules:
+  - host: git.geektr.co
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: gitlab-svc
+            port:
+              name: gitlab-http
+  - host: registry.geektr.co
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: gitlab-svc
+            port:
+              name: registry-http
+  tls:
+    - secretName: gitlab-tls
+      hosts:
+        - git.geektr.co
+        - registry.geektr.co

@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: verdaccio-deployment
+  namespace: gitlab
+  labels:
+    app: verdaccio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: verdaccio
+  template:
+    metadata:
+      labels:
+        app: verdaccio
+    spec:
+      containers:
+      - name: verdaccio
+        image: geektrcloud/verdaccio
+        env:
+        - name: VERDACCIO_PUBLIC_URL
+          value: https://npm.geektr.co
+        - name: EXT_GITLAB_GROUP
+          valueFrom:
+            secretKeyRef:
+              name: verdaccio-env
+              key: EXT_GITLAB_GROUP
+        - name: EXT_GITLAB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: verdaccio-env
+              key: EXT_GITLAB_HOST
+        - name: EXT_GITLAB_OAUTH_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: verdaccio-env
+              key: EXT_GITLAB_OAUTH_CLIENT_ID
+        - name: EXT_GITLAB_OAUTH_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: verdaccio-env
+              key: EXT_GITLAB_OAUTH_CLIENT_SECRET
+        ports:
+        - containerPort: 4873
+        volumeMounts:
+        - name: verdaccio-data-vol
+          mountPath: /verdaccio/storage
+        - name: verdaccio-config-vol
+          subPath: config.yaml
+          mountPath: /config.yaml
+      volumes:
+      - name: verdaccio-data-vol
+        hostPath:
+          path: /data/k8s-volume/verdaccio-data
+          type: DirectoryOrCreate
+      - name: verdaccio-config-vol
+        configMap:
+          name: verdaccio-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: gitlab
+  name: verdaccio-svc
+spec:
+  ports:
+    - name: http
+      port: 4873
+  selector:
+    app: verdaccio
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: gitlab
+  name: verdaccio-ingress
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+spec:
+  rules:
+  - host: npm.geektr.co
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: verdaccio-svc
+            port:
+              name: http
+  tls:
+    - secretName: npm-tls
+      hosts:
+        - npm.geektr.co
